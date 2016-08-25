@@ -4,7 +4,7 @@ import lib.data as data
 import os
 
 from keras.layers import Input, Dense, Lambda, LSTM, RepeatVector, TimeDistributed
-from keras.models import Model
+from keras.models import Model, Sequential
 from keras import backend as K
 from keras import objectives
 
@@ -19,18 +19,19 @@ training_sentence, training_answer = data.prepareTrainingData()
 
 # [2] Define DeepQA Models
 print("[2] Define DeepQA Models")
-batch_size = 100
+batch_size = 4 * 6 * 12 # To make training size divisible by batchSize
 embeDim = 98
 maxlen = 700
 nb_epoch = 50
 rnnDim = 256
 denseDim = 512
+answerDim = 2170
 
 sentence = Input(batch_shape=(batch_size, maxlen, embeDim))
 e1 = LSTM(rnnDim, activation='relu', return_sequences=True)(sentence)
 e2 = LSTM(rnnDim, activation='relu', return_sequences=True )(e1)
 e3 = LSTM(rnnDim, activation='relu')(e2)
-prediction = Dense(denseDim, activation='sigmoid')(e3)
+prediction = Dense(answerDim, activation='sigmoid')(e3)
 
 DeepQA = Model(sentence, prediction)
 
