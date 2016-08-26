@@ -22,44 +22,60 @@ def answer_dict():
     return ansToidx, idxToans
 
 #This function converts .txt data into 3-d tensors
-def toCorpusTensor(file_name):
+def toCorpusTensor(file_list):
 
-    f = open(file_name, "r", encoding="utf-8")
-    ans2idx, idx2ans = answer_dict()
+    for file_name in file_list :
+        f = open(file_name, "r", encoding="utf-8")
+        ans2idx, idx2ans = answer_dict()
 
-    sentenceTensorList = []
-    answerTensorList = []
+        sentenceTensorList = []
+        answerTensorList = []
 
-    for line in f.readlines():
-        # Read a line
-        try:
-            _title, sentence = line.replace("\n","").split("\t")
-        except :
-            continue
+        for line in f.readlines():
+            # Read a line
+            try:
+                _title, sentence = line.replace("\n","").split("\t")
+            except :
+                continue
 
-        # Make sentence tensor
-        try:
-            sentenceTensor = tensor.toTensor(sentence)
-        except Exception as es :
-            #print("sentence error : " + str(es) + " " + str(sentence))
-            continue
-
-        # Make answer tensor
-        try:
             title = tensor.preprocess(_title)
-            answerTensor = tensor.toAnswerTensor(ans2idx[title])
-        except Exception as ae :
-            print(_title)
-            print("answer error : " + str(ae) + " " + str(sentence))
-            continue
+            for entry in ans2idx:
+                if title in entry or entry in title :
 
-        # Append to the tensors to each list if both tensors have no problem
-        answerTensorList.append(answerTensor)
-        sentenceTensorList.append(sentenceTensor)
+                    # Make sentence tensor
+                    try:
+                        sentenceTensor = tensor.toTensor(sentence)
+                    except Exception as es :
+                        #print("sentence error : " + str(es) + " " + str(sentence))
+                        continue
 
+                    # Make answer tensor
+                    try:
+                        title = tensor.preprocess(_title)
+                        answerTensor = tensor.toAnswerTensor(ans2idx[entry])
+                    except Exception as ae :
+                        print(_title)
+                        print(title)
+                        print("answer error : " + str(ae) + " " + str(sentence))
+                        continue
 
-    return np.stack(sentenceTensorList), np.stack(answerTensorList)
+            # Append to the tensors to each list if both tensors have no problem
+            answerTensorList.append(answerTensor)
+            sentenceTensorList.append(sentenceTensor)
+
+    length = len(answerTensorList)
+    if length == 0 :
+        return
+    answerTensor = np.zeros((length, answerTensorList[0].shape[0]))
+    sentenceTensor = np.zeros((length, sentenceTensorList[0].shape[0], sentenceTensorList[0].shape[1]))
+    for i in range(length):
+        answerTensor[i,:] = answerTensorList[i][:]
+        sentenceTensor[i,:,:] = sentenceTensorList[i][:,:]
+
+    return answerTensor, sentenceTensor
 
 def prepareTrainingData():
-    ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-    return toCorpusTensor(ROOT_DIR + "/Data/Training/sample.txt")
+    TRAINING_DATA_DIR = os.path.dirname(os.path.dirname(__file__)) + "/Data/Training"
+    file_list = [ TRAINING_DATA_DIR + "/" + file for file in os.listdir(TRAINING_DATA_DIR) if file.endswith(".txt") ]
+    print("[1] Number of Training Text file is " + str(len(file_list)))
+    return toCorpusTensor(file_list)
