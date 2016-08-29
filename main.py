@@ -27,10 +27,9 @@ print("[1] Number of training instances is " + str(training_answer.shape[0]))
 print("[2] Define DeepQA Models")
 batch_size = 4 * 6 * 12 # To make training size divisible by batchSize
 embeDim = 98
-maxlen = 700
+maxlen = 500
 nb_epoch = 50
 rnnDim = 128
-denseDim = 512
 answerDim = 150
 
 MODEL_PATH = "Model/model.h5"
@@ -42,9 +41,8 @@ else:
 
     sentence = Input(batch_shape=(batch_size, maxlen, embeDim))
     e1 = LSTM(rnnDim, activation='relu', return_sequences=True)(sentence)
-    e2 = LSTM(rnnDim, activation='relu', return_sequences=True )(e1)
-    e3 = LSTM(rnnDim, activation='relu')(e2)
-    prediction = Dense(answerDim, activation='sigmoid')(e3)
+    e2 = LSTM(rnnDim, activation='relu')(e1)
+    prediction = Dense(answerDim, activation='sigmoid')(e2)
 
     DeepQA = Model(sentence, prediction)
 

@@ -39,6 +39,8 @@ def toCorpusTensor(file_list):
                 continue
 
             title = tensor.preprocess(_title)
+
+            hit_flag = False
             for entry in ans2idx:
                 if title in entry or entry in title :
 
@@ -53,15 +55,16 @@ def toCorpusTensor(file_list):
                     try:
                         title = tensor.preprocess(_title)
                         answerTensor = tensor.toAnswerTensor(ans2idx[entry])
-                    except Exception as ae :
-                        print(_title)
-                        print(title)
-                        print("answer error : " + str(ae) + " " + str(sentence))
+                    except Exception as ae:
+                        #print("answer error : " + str(ae) + " " + str(sentence))
                         continue
 
+                    hit_flag = True
+
             # Append to the tensors to each list if both tensors have no problem
-            answerTensorList.append(answerTensor)
-            sentenceTensorList.append(sentenceTensor)
+            if hit_flag:
+                answerTensorList.append(answerTensor)
+                sentenceTensorList.append(sentenceTensor)
 
     length = len(answerTensorList)
     if length == 0 :
@@ -72,7 +75,7 @@ def toCorpusTensor(file_list):
         answerTensor[i,:] = answerTensorList[i][:]
         sentenceTensor[i,:,:] = sentenceTensorList[i][:,:]
 
-    return answerTensor, sentenceTensor
+    return sentenceTensor, answerTensor
 
 def prepareTrainingData():
     TRAINING_DATA_DIR = os.path.dirname(os.path.dirname(__file__)) + "/Data/Training"
