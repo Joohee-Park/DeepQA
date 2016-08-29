@@ -30,7 +30,7 @@ embeDim = 98
 maxlen = 500
 nb_epoch = 50
 rnnDim = 128
-answerDim = 150
+answerDim = 50
 
 MODEL_PATH = "Model/model.h5"
 if os.path.exists(MODEL_PATH):
