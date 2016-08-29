@@ -3,15 +3,16 @@ import lib.tensor as tensor
 import lib.data as data
 import os
 
-from keras.layers import Input, Dense, Lambda, LSTM, RepeatVector, TimeDistributed
-from keras.models import Model, Sequential
-from keras.models import load_model
-from keras.models import model_from_json
-from keras import backend as K
-from keras import objectives
+from keras.layers import Input, Dense, LSTM
+from keras.models import Model, load_model
+import numpy as np
 
-import pickle
-
+embeDim = 98
+maxlen = 500
+nb_epoch = 50
+rnnDim = 128
+answerDim = 50
+batch_size = 100
 
 ROOT_DIR = os.path.dirname(__file__)
 # [0] Prepare answer dictionary
@@ -20,17 +21,21 @@ ansToidx, idxToans = data.answer_dict()
 
 # [1] Prepare Training Data
 print("[1] Prepare Training Data")
-training_sentence, training_answer = data.prepareTrainingData()
-print("[1] Number of training instances is " + str(training_answer.shape[0]))
+_training_sentence, _training_answer = data.prepareTrainingData()
+
+# [1.1] Cut the residual training data to fit batch size
+training_size = _training_answer.shape[0]
+training_size -= (training_size % batch_size)
+
+training_sentence = _training_sentence[:training_size,:,:]
+training_answer = _training_answer[:training_size,:,:]
+
+print("[1] Number of training instances is " + str(training_size))
 
 # [2] Define DeepQA Models
 print("[2] Define DeepQA Models")
-batch_size = 4 * 6 * 12 # To make training size divisible by batchSize
-embeDim = 98
-maxlen = 500
-nb_epoch = 50
-rnnDim = 128
-answerDim = 50
+
+training_sentence = training_sentence[]
 
 MODEL_PATH = "Model/model.h5"
 if os.path.exists(MODEL_PATH):
