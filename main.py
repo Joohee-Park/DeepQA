@@ -35,8 +35,6 @@ print("[1] Number of training instances is " + str(training_size))
 # [2] Define DeepQA Models
 print("[2] Define DeepQA Models")
 
-training_sentence = training_sentence[]
-
 MODEL_PATH = "Model/model.h5"
 if os.path.exists(MODEL_PATH):
     print("[2] Trained model already exist. Load the existing model")
