@@ -32,6 +32,14 @@ training_answer = _training_answer[0:training_size,:]
 
 print("[1] Number of training instances is " + str(training_size))
 
+print("[1] Training Label sanity check : " , end="")
+
+if np.sum(np.sum(training_answer)) == training_size:
+    print("PASSED")
+else:
+    print("FAILED")
+    exit()
+
 # [2] Define DeepQA Models
 print("[2] Define DeepQA Models")
 
@@ -43,8 +51,8 @@ else:
     print("[2] Trained model not found. Start to build a fresh model")
 
     sentence = Input(batch_shape=(batch_size, maxlen, embeDim))
-    e1 = LSTM(rnnDim, activation='relu', return_sequences=True)(sentence)
-    e2 = LSTM(rnnDim, activation='relu')(e1)
+    e1 = LSTM(rnnDim, activation='tanh', return_sequences=True)(sentence)
+    e2 = LSTM(rnnDim, activation='tanh')(e1)
     prediction = Dense(answerDim, activation='softmax')(e2)
 
     DeepQA = Model(sentence, prediction)
@@ -52,7 +60,6 @@ else:
     print(DeepQA.summary())
 
     DeepQA.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-
 
 # [3] Train the Model
 print("[3] Train the Model")
