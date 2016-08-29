@@ -45,13 +45,13 @@ else:
     sentence = Input(batch_shape=(batch_size, maxlen, embeDim))
     e1 = LSTM(rnnDim, activation='relu', return_sequences=True)(sentence)
     e2 = LSTM(rnnDim, activation='relu')(e1)
-    prediction = Dense(answerDim, activation='sigmoid')(e2)
+    prediction = Dense(answerDim, activation='softmax')(e2)
 
     DeepQA = Model(sentence, prediction)
 
     print(DeepQA.summary())
 
-    DeepQA.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    DeepQA.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 
 # [3] Train the Model
