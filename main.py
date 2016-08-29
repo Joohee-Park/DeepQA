@@ -59,7 +59,7 @@ else:
 
     print(DeepQA.summary())
 
-    DeepQA.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    DeepQA.compile(optimizer='adadelta', loss='rms', metrics=['accuracy'])
 
 # [3] Train the Model
 print("[3] Train the Model")
