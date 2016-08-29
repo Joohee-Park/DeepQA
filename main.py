@@ -27,8 +27,8 @@ _training_sentence, _training_answer = data.prepareTrainingData()
 training_size = _training_answer.shape[0]
 training_size -= (training_size % batch_size)
 
-training_sentence = _training_sentence[:training_size,:,:]
-training_answer = _training_answer[:training_size,:,:]
+training_sentence = _training_sentence[0:training_size,:,:]
+training_answer = _training_answer[0:training_size,:,:]
 
 print("[1] Number of training instances is " + str(training_size))
 
